@@ -37,7 +37,6 @@ public class SegmentedMeshFollower : MonoBehaviour
         _boneIndexPerVertex = new int[_originalVertices.Length];
         _localPositionToBoneSpace = new Vector3[_originalVertices.Length];
 
-        // Сортировка костей снизу вверх
         bones.Sort((a, b) =>
         {
             var ay = transform.InverseTransformPoint(a.transform.position).y;
@@ -51,19 +50,17 @@ public class SegmentedMeshFollower : MonoBehaviour
             bone.originalLocalRotation = bone.transform.localRotation;
         }
 
-        // Назначаем каждой вершине кость
         for (var i = 0; i < _originalVertices.Length; i++)
         {
             var y = _originalVertices[i].y;
             var boneIndex = FindBoneIndex(y);
             _boneIndexPerVertex[i] = boneIndex;
 
-            // Сохраняем смещение от кости в её локальных координатах
             _localPositionToBoneSpace[i] =
                 bones[boneIndex].transform.InverseTransformPoint(transform.TransformPoint(_originalVertices[i]));
         }
     }
-    
+
     public void ApplyImpulse(Vector3 worldForce)
     {
         var localForce = transform.InverseTransformDirection(worldForce);
@@ -71,10 +68,9 @@ public class SegmentedMeshFollower : MonoBehaviour
 
         for (var i = 0; i < bones.Count; i++)
         {
-            var verticalWeight = (float)i / (bones.Count - 1); // нижняя кость 0, верхняя 1
-            var intensity = 1f - verticalWeight; // нижние кости получают больше
+            var verticalWeight = (float)i / (bones.Count - 1);
+            var intensity = 1f - verticalWeight;
 
-            // Поворот либо по X, либо по Z в зависимости от направления
             var impulseOffset = new Vector3(-impactDirection.z, 0, impactDirection.x) * intensity * 10f;
 
             bones[i].velocity += impulseOffset;
@@ -92,12 +88,13 @@ public class SegmentedMeshFollower : MonoBehaviour
         {
             return 0;
         }
-        
+
         for (var i = 0; i < bones.Count - 1; i++)
         {
             if (y >= bones[i].localY && y < bones[i + 1].localY)
                 return i;
         }
+
         return bones.Count - 1;
     }
 
@@ -113,7 +110,7 @@ public class SegmentedMeshFollower : MonoBehaviour
             var swing = Quaternion.Euler(clampedOffset);
             bone.transform.localRotation = bone.originalLocalRotation * swing;
         }
-        
+
         for (var i = 0; i < _originalVertices.Length; i++)
         {
             var boneIndex = _boneIndexPerVertex[i];
