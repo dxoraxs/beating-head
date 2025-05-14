@@ -9,6 +9,7 @@ public class Raycaster : MonoBehaviour
     [SerializeField] private SegmentedMeshFollower deformer;
     [SerializeField] private HitFXController _fxController;
     [SerializeField] private ParabolaMover mover;
+    [SerializeField] private DecalController decalController;
     [SerializeField] private Camera cam;
     [SerializeField] private CameraShaker _cameraShaker;
     [SerializeField] private float _forceImpulse;
@@ -37,6 +38,7 @@ public class Raycaster : MonoBehaviour
         
         _cameraShaker.Shake();
         _fxController.OnHit(hit.point, hit.normal);
+        decalController.OnHit(hit.point, hit.normal);
 
         Vector3 force = directionToCenter * -_forceImpulse;
         deformer.ApplyImpulse(force);

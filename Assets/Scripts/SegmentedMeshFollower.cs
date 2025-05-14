@@ -81,6 +81,11 @@ public class SegmentedMeshFollower : MonoBehaviour
         }
     }
 
+    public Transform GetBoneByYPosition(float yPosition)
+    {
+        return bones[FindBoneIndex(yPosition)].transform;
+    }
+
     private int FindBoneIndex(float y)
     {
         if (bones[0].localY > y)
